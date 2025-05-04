@@ -19,7 +19,7 @@ type Patient struct {
 	PhoneNumber string    `json:"phone_number"`
 	Email string    `json:"email"`
 	Gender string
-	HospitalID string `json:"hospital_id"`
+	Hospital string `json:"hospital"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }
