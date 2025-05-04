@@ -1,0 +1,60 @@
+package handlers
+
+import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+	"time"
+
+	"github.com/roasted99/hospital-middleware/internal/models"
+	"github.com/roasted99/hospital-middleware/internal/services"
+	"github.com/roasted99/hospital-middleware/internal/utils"
+)
+
+func CreateStaff(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request models.StaffCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			utils.ResponseWithError(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
+
+		if request.Username == "" || request.Password == "" || request.Hospital == "" {
+			utils.ResponseWithError(w, http.StatusBadRequest, "Username, password, and hospital are required")
+			return
+		}
+
+		hashedPassword, err := services.HashPassword(request.Password)
+		if err != nil {
+			utils.ResponseWithError(w, http.StatusInternalServerError, "Error hashing password")
+			return
+		}
+
+		var staffID int
+		err = db.QueryRow("INSERT INTO staff (username, password, hospital, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+			request.Username, hashedPassword, request.Hospital, time.Now(), time.Now()).Scan(&staffID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				utils.ResponseWithError(w, http.StatusInternalServerError, "Failed to create staff")
+			} else {
+				utils.ResponseWithError(w, http.StatusInternalServerError, "Database error")
+			}
+			return
+		}
+
+		token, err := services.GenerateJWT(staffID, request.Username, request.Hospital)
+		if err != nil {
+			utils.ResponseWithError(w, http.StatusInternalServerError, "Failed to generate token")
+			return
+		}
+		
+		utils.ResponseWithSuccess(w, http.StatusCreated, models.AuthResponse{
+			Token:    token,
+			StaffID:  staffID,
+			Username: request.Username,
+			Hospital: request.Hospital,
+		})
+
+	}
+}
+
