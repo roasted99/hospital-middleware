@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/roasted99/hospital-middleware/internal/config"
+	"github.com/roasted99/hospital-middleware/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,21 +32,30 @@ func GenerateJWT(staffID int, username, hospital string) (string, error) {
 	return token.SignedString([]byte(config.GetJWTSecret()))
 }
 
-func ValidateToken(tokenString string) (int, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+func ValidateToken(tokenString string) (*models.Staff, error) {
+	claims := &JWTClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 		return []byte(config.GetJWTSecret()), nil
 	})
+
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		return claims.StaffID, nil
+	if !token.Valid {
+		return nil, errors.New("invalid token")
 	}
-	return 0, errors.New("invalid token")
+
+	staff := &models.Staff{
+		ID:      claims.StaffID,
+		Username: claims.Username,
+		Hospital: claims.Hospital,
+	}
+
+	return staff, nil
 }
 
 func HashPassword(password string) (string, error) {

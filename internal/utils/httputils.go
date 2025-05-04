@@ -42,6 +42,7 @@ func ResponseWithSuccess(w http.ResponseWriter, statusCode int, data interface{}
 
 	response := Response{
 		Status:  http.StatusText(statusCode),
+		Message: "Success",
 		Data: data,
 	}
 

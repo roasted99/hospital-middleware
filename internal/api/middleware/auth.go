@@ -27,13 +27,13 @@ func Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		staffID, err := services.ValidateToken(token)
+		staff, err := services.ValidateToken(token)
 		if err != nil {
 			utils.ResponseWithError(w, http.StatusUnauthorized, "Invalid token")
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), StaffKey, staffID)
+		ctx := context.WithValue(r.Context(), StaffKey, staff)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

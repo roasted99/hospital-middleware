@@ -9,6 +9,8 @@ import (
   "github.com/gorilla/mux"
   "github.com/roasted99/hospital-middleware/internal/config"
   "github.com/roasted99/hospital-middleware/internal/db"
+  "github.com/roasted99/hospital-middleware/internal/api/handlers"
+  "github.com/roasted99/hospital-middleware/internal/api/middleware"
 )
 
 func main() {
@@ -27,9 +29,14 @@ func main() {
   // Initialize router
   router := mux.NewRouter()
 
-  // Define routes
-  // router.HandleFunc("/api/v1/staff/login", loginHandler).Methods("POST")
-  // router.HandleFunc("/api/v1/staff/register", registerHandler).Methods("POST")
+	// Public routes
+	router.HandleFunc("/staff/create", handlers.CreateStaff(db)).Methods("POST")
+	router.HandleFunc("/staff/login", handlers.LoginStaff(db)).Methods("POST")
+	
+	// Protected routes
+	patientRouter := router.PathPrefix("/patient").Subrouter()
+	patientRouter.Use(middleware.Authenticate)
+	patientRouter.HandleFunc("/search", handlers.SearchPatient(db)).Methods("GET")  
 
   // Start server
   port := os.Getenv("PORT")
