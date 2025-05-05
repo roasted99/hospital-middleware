@@ -70,26 +70,29 @@ func SearchPatient(db *sql.DB) http.HandlerFunc {
 			}
 
 			if query.FirstName != "" {
-				conditions = append(conditions, "first_name_en ILIKE $"+strconv.Itoa('0'+counter)+" OR first_name_th ILIKE $"+strconv.Itoa('0'+counter)+")")
+				conditions = append(conditions, "first_name_en ILIKE $"+strconv.Itoa(counter)+" OR first_name_th ILIKE $"+strconv.Itoa(counter+1))
 				queryArgs = append(queryArgs, "%"+query.FirstName+"%")
-				counter++
+				queryArgs = append(queryArgs, "%"+query.FirstName+"%")
+				counter +=2
 			}
 
 			if query.MiddleName != "" {
-				conditions = append(conditions, "middle_name_en ILIKE $"+strconv.Itoa(counter)+" OR middle_name_th ILIKE $"+strconv.Itoa(counter)+")")
+				conditions = append(conditions, "middle_name_en ILIKE $"+strconv.Itoa(counter)+" OR middle_name_th ILIKE $"+strconv.Itoa(counter+1))
 				queryArgs = append(queryArgs, "%"+query.MiddleName+"%")
-				counter++
+				queryArgs = append(queryArgs, "%"+query.MiddleName+"%")
+				counter += 2
 			}
 
 			if query.LastName != "" {
-				conditions = append(conditions, "last_name_en ILIKE $"+strconv.Itoa(counter)+" OR last_name_th ILIKE $"+strconv.Itoa(counter)+")")
+				conditions = append(conditions, "last_name_en ILIKE $"+strconv.Itoa(counter)+" OR last_name_th ILIKE $"+strconv.Itoa(counter+1))
 				queryArgs = append(queryArgs, "%"+query.LastName+"%")
-				counter++
+				queryArgs = append(queryArgs, "%"+query.LastName+"%")
+				counter += 2
 			}
 
 			if query.DateOfBirth != "" {
 				conditions = append(conditions, "date_of_birth::text LIKE $"+strconv.Itoa(counter))
-				queryArgs = append(queryArgs,"%"+query.DateOfBirth+"%")
+				queryArgs = append(queryArgs, "%"+query.DateOfBirth+"%")
 				counter++
 			}
 
@@ -108,6 +111,8 @@ func SearchPatient(db *sql.DB) http.HandlerFunc {
 			if len(conditions) > 0 {
 				sqlQuery += " AND " + strings.Join(conditions, " AND ")
 			}
+			fmt.Println(sqlQuery)
+			fmt.Println(queryArgs)
 
 			rows, err := db.Query(sqlQuery, queryArgs...)
 			if err != nil {
@@ -141,11 +146,16 @@ func SearchPatient(db *sql.DB) http.HandlerFunc {
 
 				if err != nil {
 					utils.ResponseWithError(w, http.StatusInternalServerError, "Failed to scan patient")
+					fmt.Println(err)
 					return
 				}
 				patients = append(patients, p)
 			}
 			fmt.Println(patients)
+			if len(patients) == 0 {
+				utils.ResponseWithError(w, http.StatusNotFound, "No patient found")
+				return
+			}
 			utils.ResponseWithSuccess(w, http.StatusOK, patients)
 		} else {
 			utils.ResponseWithError(w, http.StatusBadRequest, staff.Hospital+" is not supported yet")
