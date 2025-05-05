@@ -18,7 +18,7 @@ The service provides the following API endpoints:
 |--------|----------|-------------|--------------|
 | POST | `/api/staff/create` | Create a new staff account | No |
 | POST | `/api/staff/login` | Authenticate and receive JWT token | No |
-| GET | `/api/patient/search` | Search for patients by national ID | Yes |
+| GET | `/api/patient/search?national_id=12345` | Search for patients by national ID | Yes |
 
 ## Requirements
 
@@ -62,7 +62,7 @@ cd hospital-middleware
 
 2. Configure environment variables:
 ```bash
-cp .env.example .env
+cp .env
 # Edit .env with your configuration
 ```
 
