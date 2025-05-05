@@ -16,7 +16,7 @@ The service provides the following API endpoints:
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|--------------|
-| POST | `/api/staff/create` | Create a new staff account | Yes (Admin) |
+| POST | `/api/staff/create` | Create a new staff account | No |
 | POST | `/api/staff/login` | Authenticate and receive JWT token | No |
 | GET | `/api/patient/search` | Search for patients by national ID | Yes |
 
@@ -84,9 +84,7 @@ Key environment variables:
 
 ```
 # API Server Configuration
-GIN_MODE=release
 PORT=8080
-HOST=0.0.0.0
 
 # Database Configuration
 DB_HOST=postgres
@@ -97,7 +95,8 @@ DB_NAME=hospital_db
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRATION=24h
+
+HOSPITAL_A_BASE_URL=https://hospital-a.api.co.th
 ```
 
 ## Authentication
