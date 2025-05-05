@@ -1,4 +1,4 @@
 INSERT INTO patient (first_name_th, middle_name_th, last_name_th, first_name_en, middle_name_en, last_name_en, national_id, passport_id, phone_number, date_of_birth, gender, hospital, patient_hn, email) VALUES
-('สมชาย', 'ใจดี', 'มีสุข', 'Somchai', 'Jai Dee', 'Meesuk', '1101500234567', NULL, '0812345678', '1980-08-20', 'M', 'Hospital A', 'HN-00123', "jai@gmail.com"),
-('สมหญิง', 'น่ารัก', 'ใจงาม', 'Somying', 'Narak', 'Jainงาม', '2109876543210', 'AB123456', '0898765432', '1995-01-10', 'F', 'Hospital A', 'HN-11032', "narak@email.com"),
-('สมใจ', 'รักดี', 'มีธรรม', 'Somjai', 'Rakdee', 'Meetham', '3112233445566', NULL, '0901234567', '2000-06-25', 'F', 'Hospital A', 'HN-043243', "meetham@msn.com");
+('สมชาย', 'ใจดี', 'มีสุข', 'Somchai', 'Jai Dee', 'Meesuk', '1101500234567', NULL, '0812345678', '1980-08-20', 'M', 'Hospital A', 'HN-00123', 'jai@gmail.com'),
+('สมหญิง', 'น่ารัก', 'ใจงาม', 'Somying', 'Narak', 'Jainงาม', '2109876543210', 'AB123456', '0898765432', '1995-01-10', 'F', 'Hospital A', 'HN-11032', 'narak@email.com'),
+('สมใจ', 'รักดี', 'มีธรรม', 'Somjai', 'Rakdee', 'Meetham', '3112233445566', NULL, '0901234567', '2000-06-25', 'F', 'Hospital A', 'HN-043243', 'meetham@msn.com');
