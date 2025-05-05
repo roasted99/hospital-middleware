@@ -16,9 +16,9 @@ The service provides the following API endpoints:
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|--------------|
-| POST | `/api/staff/create` | Create a new staff account | No |
-| POST | `/api/staff/login` | Authenticate and receive JWT token | No |
-| GET | `/api/patient/search?national_id=12345` | Search for patients by national ID | Yes |
+| POST | `/staff/create` | Create a new staff account | No |
+| POST | `/staff/login` | Authenticate and receive JWT token | No |
+| GET | `/patient/search?national_id=12345` | Search for patients by national ID | Yes |
 
 ## Requirements
 
@@ -43,7 +43,7 @@ go mod download
 
 3. Set up environment variables:
 ```bash
-cp .env.example .env
+cp .env
 # Edit .env with your configuration
 ```
 
@@ -76,7 +76,7 @@ mkdir -p nginx/conf.d nginx/logs
 docker compose up -d
 ```
 
-The API will be available at http://localhost/api/
+The API will be available at http://localhost:8080/
 
 ## Environment Variables
 
@@ -107,7 +107,7 @@ The API uses JWT (JSON Web Token) for authentication. Include the token in the A
 Authorization: Bearer <token>
 ```
 
-To obtain a token, use the `/api/staff/login` endpoint.
+To obtain a token, use the `/staff/login` endpoint.
 
 ## Database Migrations
 
