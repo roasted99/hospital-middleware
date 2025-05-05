@@ -1,0 +1,62 @@
+services:
+  #Golang API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hospital-middleware
+    environment:
+       PORT: 8080
+       DB_HOST: postgres
+      #  DB_PORT: 5432
+       DB_USER: postgres
+       DB_PASSWORD: postgres
+       DB_NAME: hospital_middleware
+       JWT_SECRET: kX$9mP#vN2jQz@5tRw&8yL!hF3gB*nZ
+       HOSPITAL_A_BASE_URL: http://hospital-a.api.co.th
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - backend
+      - database
+
+  #Postgres Database Service
+  postgres:
+    image: postgres:14-alpine
+    container_name: hospital-middleware-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hospital_middleware
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Initial SQL script to create tables
+      - ./internal/db/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - database
+
+  #Nginx Reverse Proxy Service
+  nginx:
+    build: ./nginx
+    container_name: hospital-middleware-nginx
+    ports:
+      - "9000:9000"
+    depends_on:
+      - api
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+  database:
+    driver: bridge
+      
+volumes:
+  postgres_data:
