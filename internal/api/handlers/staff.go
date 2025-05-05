@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -72,18 +73,19 @@ func LoginStaff(db *sql.DB) http.HandlerFunc {
 		}
 
 		var staff models.Staff
-		err := db.QueryRow("SELECT id, username, password FROM staff WHERE username = $1 AND hospital = $2", request.Username, request.Hospital).Scan(&staff.ID, &staff.Username, &staff.Password)
+		err := db.QueryRow("SELECT id, username, password, hospital FROM staff WHERE username = $1 AND hospital = $2", request.Username, request.Hospital).Scan(&staff.ID, &staff.Username, &staff.Password, &staff.Hospital)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				utils.ResponseWithError(w, http.StatusUnauthorized, "Invalid credentials")
 			} else {
+				fmt.Println(err)
 				utils.ResponseWithError(w, http.StatusInternalServerError, "Database error")
 			}
 			return
 		}
 
 		if !services.CheckPasswordHash(request.Password, staff.Password) {
-			utils.ResponseWithError(w, http.StatusUnauthorized, "Invalid credentials")
+			utils.ResponseWithError(w, http.StatusUnauthorized, "Wrong password")
 			return
 		}
 
@@ -97,7 +99,7 @@ func LoginStaff(db *sql.DB) http.HandlerFunc {
 			Token:    token,
 			StaffID:  staff.ID,
 			Username: staff.Username,
-			Hospital: request.Hospital,
+			Hospital: staff.Hospital,
 		})
 	}
 }
